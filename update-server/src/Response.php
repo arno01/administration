@@ -147,7 +147,7 @@ class Response {
 		
 		$eolLatest = $this->config->get('eol_latest');
 
-		$channel = (version_compare($completeCurrentVersion, $eolLatest, '<='))
+		$channel = ($requestedChannel && $completeCurrentVersion !== '..' && version_compare($completeCurrentVersion, $eolLatest, '<='))
 					? 'eol'
 					: $requestedChannel
 		;

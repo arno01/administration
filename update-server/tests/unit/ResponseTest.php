@@ -121,11 +121,9 @@ class ResponseTest extends \PHPUnit_Framework_TestCase {
 			->expects($this->any())
 			->method('getBuild')
 			->willReturn('2015-10-19T18:44:30+00:00');
-		$this->config
-			->expects($this->once())
-			->method('get')
-			->with('daily')
-			->willReturn(
+		$getMap = [
+			['eol_latest', '1.0'],
+			['daily', 
 				[
 					'9.1' => [
 						'downloadUrl' => 'https://download.owncloud.org/community/owncloud-daily-master.zip',
@@ -156,7 +154,12 @@ class ResponseTest extends \PHPUnit_Framework_TestCase {
 						'web' => 'https://doc.owncloud.org/server/7.0/admin_manual/maintenance/upgrade.html',
 					],
 				]
-			);
+			],
+		];
+		$this->config
+			->expects($this->any())
+			->method('get')
+			->will($this->returnValueMap($getMap));
 		$this->request
 			->expects($this->any())
 			->method('getMajorVersion')
@@ -179,25 +182,9 @@ class ResponseTest extends \PHPUnit_Framework_TestCase {
 			->expects($this->once())
 			->method('getChannel')
 			->willReturn('daily');
-		$this->request
-			->expects($this->any())
-			->method('getBuild')
-			->willReturn('2025-10-19T18:44:30+00:00');
-		$this->request
-			->expects($this->any())
-			->method('getMajorVersion')
-			->willReturn($version[0]);
-		if(isset($version[4])) {
-			$this->request
-				->expects($this->any())
-				->method('getMinorVersion')
-				->willReturn($version[4]);
-		}
-		$this->config
-			->expects($this->once())
-			->method('get')
-			->with('daily')
-			->willReturn(
+		$getMap = [
+			['eol_latest', '1.0'],
+			['daily', 
 				[
 					'9.1' => [
 						'downloadUrl' => 'https://download.owncloud.org/community/owncloud-daily-master.zip',
@@ -228,7 +215,26 @@ class ResponseTest extends \PHPUnit_Framework_TestCase {
 						'web' => 'https://doc.owncloud.org/server/7.0/admin_manual/maintenance/upgrade.html',
 					],
 				]
-			);
+			]
+		];
+		$this->config
+			->expects($this->any())
+			->method('get')
+			->will($this->returnValueMap($getMap));
+		$this->request
+			->expects($this->any())
+			->method('getBuild')
+			->willReturn('2025-10-19T18:44:30+00:00');
+		$this->request
+			->expects($this->any())
+			->method('getMajorVersion')
+			->willReturn($version[0]);
+		if(isset($version[4])) {
+			$this->request
+				->expects($this->any())
+				->method('getMinorVersion')
+				->willReturn($version[4]);
+		}
 
 		$expected = '';
 
@@ -701,6 +707,11 @@ class ResponseTest extends \PHPUnit_Framework_TestCase {
 				'web' => 'https://doc.owncloud.org/server/8.0/admin_manual/maintenance/upgrade.html',
 				'downloadUrl' => 'https://downloads.owncloud.com/foo.zip',
 			],
+			'eol_latest' => '1.0',
+		];
+		$getMap = [
+			['eol_latest', '1.0'],
+			[$channel, $config],
 		];
 		$this->request
 			->expects($this->any())
@@ -709,8 +720,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase {
 		$this->config
 			->expects($this->any())
 			->method('get')
-			->with($channel)
-			->willReturn($config);
+			->will($this->returnValueMap($getMap));
 		$this->request
 			->expects($this->any())
 			->method('getMajorVersion')
